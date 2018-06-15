@@ -1,16 +1,9 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
-Route::get('/', function () {
-    return view('welcome');
+Route::prefix('/api/quotes/')->group(function () {
+    Route::post('', 'QuoteController@create')->name('create');
+    Route::get('', 'QuoteController@quotes')->name('quotes');
+    Route::get('{id}', 'QuoteController@quote')->name('quote');
+    Route::put('{id}', 'QuoteController@update')->name('update');
+    Route::delete('{id}', 'QuoteController@destroy')->name('destroy');
 });
