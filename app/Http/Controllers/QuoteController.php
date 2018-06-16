@@ -19,18 +19,31 @@ class QuoteController extends Controller
      */
     public function quotes()
     {
-        $data = $_GET;
+        if(isset($_GET['page'])) {
+            $page = $_GET['page'];
+        }
 
-        $decodeData = json_decode(key($data));
+        if(isset($_GET['totalItems'])) {
+            $totalItems = $_GET['totalItems'];
+        }
 
-        $page = $decodeData->page;
-        $totalItems = $decodeData->totalItems;
-        $itemsPerPage = $decodeData->itemsPerPage;
-        return (new QuoteCollection(Quote::all()))
+        if(isset($_GET['itemsPerPage'])) {
+            $itemsPerPage = $_GET['itemsPerPage'];
+        }
+
+        if(isset($_GET['author'])) {
+            $author = $_GET['author'];
+        }
+
+        return (new QuoteCollection(
+                    (isset($author)) ? Quote::where('author', $author)->get() : Quote::all()
+                )
+            )
             ->additional([
-                'page' => $page,
-                'totalItems' => $totalItems,
-                'itemsPerPage' => $itemsPerPage
+                'page' => (isset($page)) ? $page : null,
+                'totalItems' => (isset($totalItems)) ? $totalItems : null,
+                'itemsPerPage' => (isset($itemsPerPage)) ? $itemsPerPage : null,
+                'author' => (isset($author)) ? $author : null
             ]);
     }
 
@@ -55,11 +68,11 @@ class QuoteController extends Controller
      */
     public function create()
     {
-        $data = $_POST;
+        $data = $_POST['json'];
 
         $quote = new Quote();
 
-        $decodeData = json_decode(key($data));
+        $decodeData = json_decode($data);
 
         $quote->author($decodeData->author);
         $quote->text($decodeData->text);
@@ -75,11 +88,11 @@ class QuoteController extends Controller
      */
     public function update($id)
     {
-        $data = $_POST;
+        $data = $_POST['json'];
 
         $quote = Quote::find($id);
 
-        $decodeData = json_decode(key($data));
+        $decodeData = json_decode($data);
 
         $quote->author($decodeData->author);
         $quote->text($decodeData->text);
