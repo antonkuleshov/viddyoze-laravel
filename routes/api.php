@@ -16,3 +16,11 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::prefix('/quotes/')->group(function () {
+    Route::post('', 'QuoteController@create')->name('create');
+    Route::get('', 'QuoteController@quotes')->name('quotes');
+    Route::get('{id}', 'QuoteController@quote')->name('quote');
+    Route::put('{id}', 'QuoteController@update')->name('update');
+    Route::delete('{id}', 'QuoteController@destroy')->name('destroy');
+});

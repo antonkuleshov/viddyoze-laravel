@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Quote;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Response;
 use App\Http\Resources\Quote as QuoteResource;
 use App\Http\Resources\QuoteCollection;
 
@@ -64,7 +65,7 @@ class QuoteController extends Controller
     /**
      * Create the quote in storage.
      *
-     * @param (json) $data
+     * @return response json
      */
     public function create()
     {
@@ -74,40 +75,52 @@ class QuoteController extends Controller
 
         $decodeData = json_decode($data);
 
-        $quote->author($decodeData->author);
-        $quote->text($decodeData->text);
+        $quote->author = $decodeData->author;
+        $quote->text = $decodeData->text;
 
         $quote->save();
+
+        return response()->json([
+            'message' => 'Create success'
+        ], 201);
     }
 
     /**
      * Update the quote in storage.
      *
      * @param $id
-     * @param (json) $data
+     * @return response json
      */
     public function update($id)
     {
-        $data = $_POST['json'];
+        $data = file_get_contents("php://input");
+        $strJson = substr($data, 5);
+        $json = urldecode($strJson);
 
         $quote = Quote::find($id);
 
-        $decodeData = json_decode($data);
+        $decodeData = json_decode($json);
 
-        $quote->author($decodeData->author);
-        $quote->text($decodeData->text);
+        $quote->author = $decodeData->author;
+        $quote->text = $decodeData->text;
 
         $quote->save();
 
+        return response()->json([
+            'message' => 'Update success'
+        ], 200);
     }
 
     /**
      * Destroy the quote.
      *
      * @param $id
+     * @return response json
      */
     public function destroy($id)
     {
         Quote::find($id)->delete();
+
+        return response()->json(null, 204);
     }
 }
